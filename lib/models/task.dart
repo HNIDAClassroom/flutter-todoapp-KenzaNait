@@ -14,6 +14,8 @@ class Task{
 
         required this.date,
 
+         this.isCompleted = false,
+
         required this.category,
 
     }) : id = uuid.v4();
@@ -25,6 +27,8 @@ class Task{
         final String description;
 
         final DateTime date;
+
+         bool isCompleted;
 
         final Category category;
 

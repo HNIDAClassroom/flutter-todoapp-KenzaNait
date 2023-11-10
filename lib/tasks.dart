@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:todolist_app/Widgets/new_task.dart';
 import 'package:todolist_app/models/task.dart';
+import 'package:todolist_app/services/firestore.dart';
+
 import 'package:todolist_app/tasks_list.dart';
 
 class Tasks extends StatefulWidget {
@@ -18,8 +20,9 @@ return _TasksState();
 }
 
 class _TasksState extends State<Tasks> {
+            final FirestoreService firestoreService = FirestoreService();
             final List<Task> _registeredTasks = [
-
+       
               Task(
               title: 'Apprendre Flutter',
               description: 'Suivre le cours pour apprendre de nouvelles compétences et pratiquer',
@@ -44,14 +47,20 @@ class _TasksState extends State<Tasks> {
               // Add more tasks with descriptions as needed
 
               ];
-  void _openAddTaskOverlay() 
-  {
+  void _openAddTaskOverlay() {
     showModalBottomSheet(
       context: context,
-      builder: (ctx) => const NewTask(),
+      builder: (ctx) => NewTask(onAddTask: _addTask),
     );
   }
 
+  void _addTask(Task task) {
+    setState(() {
+      _registeredTasks.add(task);
+      firestoreService.addTask(task);
+      Navigator.pop(context);
+    });
+  }
 
       @override
 
@@ -59,25 +68,24 @@ class _TasksState extends State<Tasks> {
 
             return Scaffold(
               appBar: AppBar(
-              title: const Center(child: Text('ToDoList'),),
+              title: const Center(child: Text('To Do List',style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 85, 232, 251),
+              ),),),
               actions: [
                 IconButton(onPressed: _openAddTaskOverlay,
                 icon: Ink(
                   decoration : const BoxDecoration(
-                  shape: BoxShape.circle , color :  Color.fromARGB(255, 143, 143, 193)),
+                  shape: BoxShape.circle , color :  Color.fromARGB(255, 138, 210, 220)),
                   child:  const Padding( padding:EdgeInsets.all(10),
                   child : Icon(Icons.add)))),
               ],
             ),
 
-            body: Center(child: Column(children: [
-            Expanded(child: TasksList(tasks: _registeredTasks)),
-            ],
-            ),
-            ),
+            body: TasksList(tasks: _registeredTasks),
+            );
   
-      );
-
+      
       }
 
 }
